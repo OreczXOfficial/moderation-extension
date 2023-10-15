@@ -1,17 +1,17 @@
-class Moderation {
+class ModerateURL {
   getInfo() {
     return {
       id: 'moderation',
-      name: 'Moderation',
+      name: 'Moderate URLs',
       blocks: [
         {
           opcode: 'moderate',
           blockType: Scratch.BlockType.BOOLEAN,
-          text: 'Moderate [ONE] for Prohibited Words',
+          text: 'Check for URLs in [ONE]',
           arguments: {
             ONE: {
               type: Scratch.ArgumentType.STRING,
-              defaultValue: 'Test Moderation Text',
+              defaultValue: 'Test Text with URLs',
             },
           },
         },
@@ -20,33 +20,17 @@ class Moderation {
   }
 
   moderate(args) {
-    const mensagem = args.ONE.toLowerCase();
-    const url = "https://oreczxofficial.github.io/bad.txt"; // O URL é fixo
+    const mensagem = args.ONE;
 
-    return fetch(url)
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error('Não foi possível buscar o arquivo.');
-        }
-      })
-      .then((textoDoSite) => {
-        const palavrasProibidas = textoDoSite.toLowerCase().split('\n');
+    // Expressão regular para verificar se há URLs no texto
+    const urlRegex = /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/gi;
 
-        for (const palavraProibida of palavrasProibidas) {
-          if (mensagem.includes(palavraProibida.trim())) {
-            return false; // Se uma palavra proibida for encontrada, retorna falso.
-          }
-        }
+    if (urlRegex.test(mensagem)) {
+      return true; // Se um URL for encontrado, retorna verdadeiro.
+    }
 
-        return true; // Se nenhuma palavra proibida for encontrada, retorna verdadeiro.
-      })
-      .catch((error) => {
-        console.error(error);
-        return false; // Em caso de erro na solicitação, também retorna falso.
-      });
+    return false; // Se nenhum URL for encontrado, retorna falso.
   }
 }
 
-Scratch.extensions.register(new Moderation());
+Scratch.extensions.register(new ModerateURL());
